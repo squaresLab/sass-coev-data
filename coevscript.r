@@ -21,11 +21,21 @@ cbPalette <- c("#762a83","#af8dc3","#e7d4e8","#d9f0d3","#7fbf7b","#1b7837")
 cbPalette <- c("#762a83","#7fbf7b")
 
 # guru by gen
+# 9 x 8 in
 p <- ggplot(data=dataprocsub, aes(y=genGuruExploitAvg,x=factor(generation),color=factor(init)))
 p <- p + xlab("Generation of Evolution") + ylab("Average Guru Exploitability") + theme_bw()
 p <- p + scale_colour_manual(values=cbPalette,name="Initial Population")
 p <- p + theme(text=element_text(size=18), title=element_text(size=18,face="bold"),legend.title=element_text(size=14,face="bold"),legend.text=element_text(size=14),legend.key.size=unit(0.2,"in"),legend.position=c(.875,.085))
 p + geom_boxplot(lwd=1) + facet_grid(factor(dataprocsub$numMutations))
+
+# guru by time
+dataprocsubagg <- aggregate(dataprocsub,by=list(dataprocsub$init,dataprocsub$numMutations,dataprocsub$generation), FUN=mean,na.rm=TRUE)
+
+p <- ggplot(data=dataprocsubagg, aes(y=genGuruExploitAvg,x=cumulativeTime/1000,color=factor(Group.1)))
+p <- p + xlab("Cumulative Evaluation Time\n(seconds)") + ylab("Average Guru Exploitability") + theme_bw()
+p <- p + scale_colour_manual(values=cbPalette,name="Initial Population")
+p <- p + theme(panel.margin = unit(1, "lines"), text=element_text(size=18), title=element_text(size=18,face="bold"),legend.title=element_text(size=14,face="bold"),legend.text=element_text(size=14),legend.key.size=unit(0.2,"in"),legend.position=c(.7,.125))
+p + geom_line(lwd=1) + facet_grid(factor(dataprocsubagg$Group.2))
 
 
 # reference code below, not production
