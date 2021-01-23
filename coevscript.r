@@ -1,5 +1,6 @@
 library(dplyr)
 library(ggplot2)
+library("readr", lib.loc="~/R/x86_64-pc-linux-gnu-library/4.0")
 
 scratch <- read_csv("research/coev-taas-data/coevScratchOut/hscratch.csv", col_names = TRUE)
 scratch$init = "scratch"
@@ -13,8 +14,10 @@ dataproc = data %>%
 
 buggy = filter(dataproc, genGuruExploitAvg > 0)
 
-p <- ggplot(data=dataproc, aes(y=genGuruExploitAvg,x=cumulativeTime/1000,color=factor(init)))
-p + geom_line(lwd=1) + facet_grid(dataproc$scenario_id)
+dataprocsub = subset(dataproc,dataproc$generation < 25)
+
+p <- ggplot(data=dataprocsub, aes(y=genGuruExploitAvg,x=factor(generation),color=factor(init)))
+p + geom_boxplot(lwd=1) + facet_grid(factor(dataprocsub$numMutations))
 
 p <- p +  theme_bw() + xlab("Cumulative Evaluation Time (seconds)") + ylab("Utility") + scale_color_discrete(name="Initial Population") #+ coord_cartesian(xlim=c(0, 20))
 p <- p + theme(text=element_text(size=18), title=element_text(size=18,face="bold"),legend.title=element_text(size=18,face="bold"),legend.text=element_text(size=16),legend.key.size=unit(0.3,"in"),legend.position=c(.7,.6))
