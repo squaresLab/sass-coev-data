@@ -12,15 +12,26 @@ data = rbind(scratch,reuse)
 dataproc = data %>%
   mutate(scenario_id = group_indices(., payObs,POSObs,webObs,vendObs,empObs,webVal,payVal,posVal))
 
-buggy = filter(dataproc, genGuruExploitAvg > 0)
+#buggy = filter(dataproc, genGuruExploitAvg > 0)
 
-dataprocsub = subset(dataproc,dataproc$generation < 25)
+dataprocsub = subset(dataproc,dataproc$generation < 20)
 
+# colorblind color scheme
+cbPalette <- c("#762a83","#af8dc3","#e7d4e8","#d9f0d3","#7fbf7b","#1b7837")
+cbPalette <- c("#762a83","#7fbf7b")
+
+# guru by gen
 p <- ggplot(data=dataprocsub, aes(y=genGuruExploitAvg,x=factor(generation),color=factor(init)))
+p <- p + xlab("Generation of Evolution") + ylab("Average Guru Exploitability") + theme_bw()
+p <- p + scale_colour_manual(values=cbPalette,name="Initial Population")
+p <- p + theme(text=element_text(size=18), title=element_text(size=18,face="bold"),legend.title=element_text(size=14,face="bold"),legend.text=element_text(size=14),legend.key.size=unit(0.2,"in"),legend.position=c(.875,.085))
 p + geom_boxplot(lwd=1) + facet_grid(factor(dataprocsub$numMutations))
 
+
+# reference code below, not production
 p <- p +  theme_bw() + xlab("Cumulative Evaluation Time (seconds)") + ylab("Utility") + scale_color_discrete(name="Initial Population") #+ coord_cartesian(xlim=c(0, 20))
 p <- p + theme(text=element_text(size=18), title=element_text(size=18,face="bold"),legend.title=element_text(size=18,face="bold"),legend.text=element_text(size=16),legend.key.size=unit(0.3,"in"),legend.position=c(.7,.6))
 p + geom_line(lwd=2)   + scale_y_continuous(labels = function(x) format(x, scientific = TRUE)) + facet_grid(Group.4~Group.3)+ coord_cartesian(xlim=c(1,60)) +scale_colour_manual(values=cbPalette,name="Initial Population")
 #+ coord_cartesian(xlim=c(0.5,125)) 
+#+ coord_cartesian(xlim=c(1,24.95))
 
